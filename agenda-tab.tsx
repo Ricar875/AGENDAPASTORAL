@@ -296,3 +296,143 @@ export function AgendaTab() {
     </div>
   )
 }
+"use client"
+
+import { useState } from "react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+} from "@/components/ui/dialog"
+import { Label } from "@/components/ui/label"
+import { Calendar, MapPin, User, Plus, Clock, CheckCircle2, Circle } from "lucide-react"
+
+type CompromissoTipo = "visita" | "reuniao"
+type CompromissoStatus = "pendente" | "concluido"
+
+interface Compromisso {
+  id: string
+  tipo: CompromissoTipo
+  titulo: string
+  pessoa: string
+  local: string
+  data: string
+  hora: string
+  observacoes?: string
+  status: CompromissoStatus
+}
+
+const compromissosIniciais: Compromisso[] = [
+  {
+    id: "1",
+    tipo: "visita",
+    titulo: "Visita pastoral",
+    pessoa: "Família Souza",
+    local: "Rua das Flores, 123",
+    data: "2026-07-08",
+    hora: "15:00",
+    observacoes: "Acompanhamento pós-hospitalar",
+    status: "pendente",
+  },
+  {
+    id: "2",
+    tipo: "reuniao",
+    titulo: "Reunião de conselho",
+    pessoa: "Conselho de Anciãos",
+    local: "Sala da administração",
+    data: "2026-07-06",
+    hora: "19:30",
+    status: "pendente",
+  },
+]
+
+export function AgendaTab() {
+  const [compromissos, setCompromissos] = useState<Compromisso[]>(compromissosIniciais)
+  const [dialogAberto, setDialogAberto] = useState(false)
+  const [novo, setNovo] = useState<Partial<Compromisso>>({ tipo: "visita" })
+
+  const adicionarCompromisso = () => {
+    if (!novo.titulo || !novo.pessoa || !novo.data) return
+
+    const compromisso: Compromisso = {
+      id: Date.now().toString(),
+      tipo: novo.tipo as CompromissoTipo,
+      titulo: novo.titulo,
+      pessoa: novo.pessoa,
+      local: novo.local || "",
+      data: novo.data,
+      hora: novo.hora || "00:00",
+      observacoes: novo.observacoes,
+      status: "pendente",
+    }
+
+    setCompromissos((prev) =>
+      [...prev, compromisso].sort((a, b) => a.data.localeCompare(b.data) || a.hora.localeCompare(b.hora)),
+    )
+    setNovo({ tipo: "visita" })
+    setDialogAberto(false)
+  }
+
+  const alternarStatus = (id: string) => {
+    setCompromissos((prev) =>
+      prev.map((c) =>
+        c.id === id ? { ...c, status: c.status === "pendente" ? "concluido" : "pendente" } : c,
+      ),
+    )
+  }
+
+  const formatarData = (data: string) => {
+    const [ano, mes, dia] = data.split("-")
+    return `${dia}/${mes}/${ano}`
+  }
+
+  const pendentes = compromissos.filter((c) => c.status === "pendente")
+  const concluidos = compromissos.filter((c) => c.status === "concluido")
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-semibold tracking-tight">Agenda Pastoral</h2>
+          <p className="text-sm text-muted-foreground">Visitas e reuniões marcadas</p>
+        </div>
+
+        <Dialog open={dialogAberto} onOpenChange={setDialogAberto}>
+          <DialogTrigger asChild>
+            <Button>
+              <Plus className="mr-2 h-4 w-4" />
+              Novo compromisso
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Novo compromisso</DialogTitle>
+            </DialogHeader>
+
+            <div className="space-y-4 py-2">
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  variant={novo.tipo === "visita" ? "default" : "outline"}
+                  size="sm"
+                  className="flex-1"
+                  onClick={() => setNovo((n) => ({ ...n, tipo: "visita" }))}
+                >
+                  Visita
+                </Button>
+                <Button
+                  type="button"
+                  variant={novo.tipo === "reuniao" ? "default" : "outline"}
+                  size="sm"
+                  className="flex-1"
+                  onClick={() => setNovo((n) => ({ ...n, tipo: "reuniao" }))}
+                >
+                  Reunião
