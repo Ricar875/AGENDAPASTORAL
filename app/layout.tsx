@@ -1,24 +1,3 @@
-
-import type { Metadata } from "next"
-import "./globals.css"
-
-export const metadata: Metadata = {
-  title: "Gestor Pastoral",
-  description: "Sistema de gestão pastoral",
-}
-
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
-  return (
-    <html lang="pt-BR">
-      <body>{children}</body>
-    </html>
-  )
-}
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -47,6 +26,25 @@ export default function RootLayout({
   body {
     @apply bg-background text-foreground;
   }
+}
+import type { Metadata } from "next"
+import "./globals.css"
+
+export const metadata: Metadata = {
+  title: "Gestor Pastoral",
+  description: "Sistema de gestão pastoral",
+}
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    <html lang="pt-BR">
+      <body>{children}</body>
+    </html>
+  )
 }
 import { AppShell } from "@/components/gestor/app-shell"
 
