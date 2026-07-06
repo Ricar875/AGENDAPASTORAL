@@ -1315,3 +1315,6 @@ export default config
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
   "exclude": ["node_modules"]
 }
+git add .
+git commit -m "Adiciona estrutura completa do projeto"
+git push
